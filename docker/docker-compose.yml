@@ -20,7 +20,7 @@ services:
 
   pipeline:
     build:
-      context: .
+      context: ..                     # build from project root
       dockerfile: docker/Dockerfile
     depends_on:
       postgres:
@@ -32,9 +32,12 @@ services:
       DB_USER: admin
       DB_PASSWORD: password
     volumes:
-      - ./data:/app/data
-      - ./logs:/app/logs
-    command: ["python", "--version"]
+      - ../data:/app/data
+      - ../logs:/app/logs
+      - ../scripts:/app/scripts
+      - ../config:/app/config
+      - ../sql:/app/sql               # ✅ REQUIRED for quality checks
+    command: ["python", "--version"]  # default safe command
 
 volumes:
   postgres_data:

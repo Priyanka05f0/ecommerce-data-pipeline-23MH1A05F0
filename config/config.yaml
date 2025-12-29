@@ -1,0 +1,20 @@
+database:
+  host: postgres
+  port: 5432
+  name: ecommerce_db
+  user: admin
+  password: password
+
+data_generation:
+  customers: 1000
+  products: 500
+  transactions: 10000
+
+pipeline:
+  batch_size: 500
+  log_level: INFO
+  retry_attempts: 3
+  timeout_seconds: 30
+
+bi_tool:
+  tool: tableau
