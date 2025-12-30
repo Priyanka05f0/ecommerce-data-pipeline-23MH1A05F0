@@ -1,0 +1,39 @@
+{
+    "pipeline_execution_id": "PIPE_20251229_203550",
+    "start_time": "2025-12-29T20:35:50.861149",
+    "status": "success",
+    "steps_executed": {
+        "Data Generation": {
+            "status": "success",
+            "duration_seconds": 6.43,
+            "retry_attempts": 0
+        },
+        "Data Ingestion": {
+            "status": "success",
+            "duration_seconds": 2.19,
+            "retry_attempts": 0
+        },
+        "Data Quality Checks": {
+            "status": "success",
+            "duration_seconds": 0.79,
+            "retry_attempts": 0
+        },
+        "Staging to Production": {
+            "status": "success",
+            "duration_seconds": 1.4,
+            "retry_attempts": 0
+        },
+        "Warehouse Load": {
+            "status": "success",
+            "duration_seconds": 1.3,
+            "retry_attempts": 0
+        },
+        "Analytics Generation": {
+            "status": "success",
+            "duration_seconds": 1.92,
+            "retry_attempts": 0
+        }
+    },
+    "end_time": "2025-12-29T20:36:04.877449",
+    "total_duration_seconds": 14.02
+}

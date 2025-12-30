@@ -1,0 +1,26 @@
+{
+  "ingestion_timestamp": "2025-12-29T20:35:58.246878",
+  "tables_loaded": {
+    "customers": {
+      "rows_loaded": 1000,
+      "status": "success",
+      "error_message": null
+    },
+    "products": {
+      "rows_loaded": 500,
+      "status": "success",
+      "error_message": null
+    },
+    "transactions": {
+      "rows_loaded": 10000,
+      "status": "success",
+      "error_message": null
+    },
+    "transaction_items": {
+      "rows_loaded": 29965,
+      "status": "success",
+      "error_message": null
+    }
+  },
+  "total_execution_time_seconds": 1.14
+}
