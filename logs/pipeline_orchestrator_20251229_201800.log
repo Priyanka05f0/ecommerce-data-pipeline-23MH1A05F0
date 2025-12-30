@@ -1,0 +1,32 @@
+2025-12-29 20:18:00,100 | INFO | Starting step: Data Generation
+2025-12-29 20:18:07,488 | INFO | Completed step: Data Generation in 7.39s
+2025-12-29 20:18:07,489 | INFO | Starting step: Data Ingestion
+2025-12-29 20:18:10,973 | INFO | Completed step: Data Ingestion in 3.48s
+2025-12-29 20:18:10,974 | INFO | Starting step: Data Quality Checks
+2025-12-29 20:18:12,294 | INFO | Completed step: Data Quality Checks in 1.32s
+2025-12-29 20:18:12,295 | INFO | Starting step: Staging to Production
+2025-12-29 20:18:13,863 | ERROR | Staging to Production failed (attempt 1)
+Traceback (most recent call last):
+  File "/app/scripts/pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "/usr/local/lib/python3.10/subprocess.py", line 526, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/transformation/staging_to_production.py']' returned non-zero exit status 1.
+2025-12-29 20:18:14,872 | INFO | Starting step: Staging to Production
+2025-12-29 20:18:16,411 | ERROR | Staging to Production failed (attempt 2)
+Traceback (most recent call last):
+  File "/app/scripts/pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "/usr/local/lib/python3.10/subprocess.py", line 526, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/transformation/staging_to_production.py']' returned non-zero exit status 1.
+2025-12-29 20:18:18,419 | INFO | Starting step: Staging to Production
+2025-12-29 20:18:19,600 | ERROR | Staging to Production failed (attempt 3)
+Traceback (most recent call last):
+  File "/app/scripts/pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "/usr/local/lib/python3.10/subprocess.py", line 526, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/transformation/staging_to_production.py']' returned non-zero exit status 1.
+2025-12-29 20:18:19,614 | INFO | Pipeline execution finished
+2025-12-29 20:18:19,614 | INFO | Execution report saved to data/processed/pipeline_execution_report.json

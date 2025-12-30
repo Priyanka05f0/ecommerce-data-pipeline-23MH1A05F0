@@ -1,0 +1,14 @@
+2025-12-29 20:35:50,861 | INFO | Starting step: Data Generation
+2025-12-29 20:35:57,290 | INFO | Completed step: Data Generation in 6.43s
+2025-12-29 20:35:57,291 | INFO | Starting step: Data Ingestion
+2025-12-29 20:35:59,479 | INFO | Completed step: Data Ingestion in 2.19s
+2025-12-29 20:35:59,479 | INFO | Starting step: Data Quality Checks
+2025-12-29 20:36:00,266 | INFO | Completed step: Data Quality Checks in 0.79s
+2025-12-29 20:36:00,267 | INFO | Starting step: Staging to Production
+2025-12-29 20:36:01,664 | INFO | Completed step: Staging to Production in 1.4s
+2025-12-29 20:36:01,665 | INFO | Starting step: Warehouse Load
+2025-12-29 20:36:02,960 | INFO | Completed step: Warehouse Load in 1.3s
+2025-12-29 20:36:02,961 | INFO | Starting step: Analytics Generation
+2025-12-29 20:36:04,876 | INFO | Completed step: Analytics Generation in 1.92s
+2025-12-29 20:36:04,885 | INFO | Pipeline execution finished
+2025-12-29 20:36:04,886 | INFO | Execution report saved to data/processed/pipeline_execution_report.json
