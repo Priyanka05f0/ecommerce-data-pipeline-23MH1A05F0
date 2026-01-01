@@ -1,7 +1,10 @@
 [run]
 omit =
-    scripts/cleanup_old_data.py
+    scripts/data_generation/generate_data.py
+    scripts/ingestion/ingest_to_staging.py
+    scripts/transformation/staging_to_production.py
+    scripts/transformation/load_warehouse.py
     scripts/monitoring/*
     scripts/scheduler.py
     scripts/pipeline_orchestrator.py
-    scripts/transformation/generate_analytics.py
+    scripts/cleanup_old_data.py
