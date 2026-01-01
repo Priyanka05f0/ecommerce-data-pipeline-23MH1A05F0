@@ -6,10 +6,10 @@ from datetime import datetime
 import psycopg2
 
 # -----------------------------
-# Config (CI SAFE)
+# Database config (CI SAFE)
 # -----------------------------
 DB_CONFIG = {
-    "host": os.getenv("DB_HOST", "localhost"),   # ✅ FIXED
+    "host": os.getenv("DB_HOST", "localhost"),
     "port": int(os.getenv("DB_PORT", 5432)),
     "database": os.getenv("DB_NAME", "ecommerce_db"),
     "user": os.getenv("DB_USER", "admin"),
@@ -40,7 +40,6 @@ def run_quality_checks():
     """)
 
     null_customers, null_amounts = cur.fetchone()
-
     total_issues = null_customers + null_amounts
     quality_score = max(0, 100 - total_issues)
 
