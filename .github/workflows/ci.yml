@@ -39,21 +39,26 @@ jobs:
         run: |
           pip install -r requirements.txt
 
+      # ✅ Install PostgreSQL client (psql)
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
       - name: Wait for PostgreSQL
         run: sleep 10
 
-      # ✅ CREATE SCHEMAS (THIS FIXES MOST FAILURES)
-      - name: Create database schemas
+      # ✅ Create schemas + tables
+      - name: Initialize database
         env:
           PGPASSWORD: password
         run: |
-          psql -h localhost -U admin -d ecommerce_db <<EOF
-          CREATE SCHEMA IF NOT EXISTS staging;
-          CREATE SCHEMA IF NOT EXISTS production;
-          CREATE SCHEMA IF NOT EXISTS warehouse;
-          EOF
+          psql -h localhost -U admin -d ecommerce_db -f sql/ddl/schema.sql
+          psql -h localhost -U admin -d ecommerce_db -f sql/ddl/staging_tables.sql
+          psql -h localhost -U admin -d ecommerce_db -f sql/ddl/production_tables.sql
+          psql -h localhost -U admin -d ecommerce_db -f sql/ddl/warehouse_tables.sql
 
-      # ✅ RUN FULL ETL PIPELINE
+      # ✅ Run full ETL pipeline
       - name: Run full ETL pipeline
         env:
           DB_HOST: localhost
@@ -67,7 +72,7 @@ jobs:
           python scripts/transformation/staging_to_production.py
           python scripts/transformation/load_warehouse.py
 
-      # ✅ RUN TESTS
+      # ✅ Run tests
       - name: Run tests
         env:
           DB_HOST: localhost
