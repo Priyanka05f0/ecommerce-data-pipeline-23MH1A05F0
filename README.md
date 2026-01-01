@@ -124,7 +124,7 @@ ecommerce-data-pipeline/
 ### Setup Steps
 ```bash
 git clone <https://github.com/Priyanka05f0/ecommerce-data-pipeline-23MH1A05F0>
-cd ecommerce-data-pipeline
+cd ecommerce-data-pipeline-23MH1A05F0
 docker-compose -f docker/docker-compose.yml up --build
 ```
 This will:
