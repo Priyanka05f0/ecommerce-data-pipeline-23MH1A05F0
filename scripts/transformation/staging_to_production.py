@@ -1,9 +1,6 @@
 from sqlalchemy import create_engine, text
 import os
 
-# -----------------------------
-# Database config (CI SAFE)
-# -----------------------------
 DB_URL = (
     f"postgresql://{os.getenv('DB_USER', 'admin')}:"
     f"{os.getenv('DB_PASSWORD', 'password')}@"
@@ -12,22 +9,15 @@ DB_URL = (
     f"{os.getenv('DB_NAME', 'ecommerce_db')}"
 )
 
-# -----------------------------
-# Main ETL
-# -----------------------------
 def run_staging_to_production():
     engine = create_engine(DB_URL)
 
     with engine.begin() as conn:
 
-        # -----------------------------
-        # Create schema
-        # -----------------------------
+        # 1️⃣ SCHEMA
         conn.execute(text("CREATE SCHEMA IF NOT EXISTS production;"))
 
-        # -----------------------------
-        # Create tables
-        # -----------------------------
+        # 2️⃣ TABLES
         conn.execute(text("""
             CREATE TABLE IF NOT EXISTS production.customers (
                 customer_id TEXT PRIMARY KEY,
@@ -81,41 +71,19 @@ def run_staging_to_production():
             );
         """))
 
-        # -----------------------------
-        # Truncate existing data
-        # -----------------------------
+        # 3️⃣ TRUNCATE (SAFE NOW)
         conn.execute(text("TRUNCATE production.transaction_items CASCADE;"))
         conn.execute(text("TRUNCATE production.transactions CASCADE;"))
         conn.execute(text("TRUNCATE production.products CASCADE;"))
         conn.execute(text("TRUNCATE production.customers CASCADE;"))
 
-        # -----------------------------
-        # Load data
-        # -----------------------------
-        conn.execute(text("""
-            INSERT INTO production.customers
-            SELECT * FROM staging.customers;
-        """))
+        # 4️⃣ LOAD DATA
+        conn.execute(text("INSERT INTO production.customers SELECT * FROM staging.customers;"))
+        conn.execute(text("INSERT INTO production.products SELECT * FROM staging.products;"))
+        conn.execute(text("INSERT INTO production.transactions SELECT * FROM staging.transactions;"))
+        conn.execute(text("INSERT INTO production.transaction_items SELECT * FROM staging.transaction_items;"))
 
-        conn.execute(text("""
-            INSERT INTO production.products
-            SELECT * FROM staging.products;
-        """))
+    print("✅ Staging → Production completed successfully")
 
-        conn.execute(text("""
-            INSERT INTO production.transactions
-            SELECT * FROM staging.transactions;
-        """))
-
-        conn.execute(text("""
-            INSERT INTO production.transaction_items
-            SELECT * FROM staging.transaction_items;
-        """))
-
-    print("✅ Step completed successfully: Staging → Production")
-
-# -----------------------------
-# Entry point
-# -----------------------------
 if __name__ == "__main__":
     run_staging_to_production()
