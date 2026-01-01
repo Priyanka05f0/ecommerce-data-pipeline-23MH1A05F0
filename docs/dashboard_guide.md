@@ -112,7 +112,6 @@ To update the dashboard with the latest data:
 1. Run the complete ETL pipeline:
    ```bash
    python scripts/pipeline_orchestrator.py
-```
 2. Open Power BI Desktop
 
 3. Click Refresh
