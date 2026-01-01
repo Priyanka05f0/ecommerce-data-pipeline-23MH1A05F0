@@ -1,3 +1,4 @@
+![CI](https://github.com/Priyanka05f0/ecommerce-data-pipeline-23MH1A05F0/actions/workflows/ci.yml/badge.svg)
 # E-Commerce Data Pipeline – End-to-End ETL Project
 
 ## Project Overview

@@ -61,3 +61,24 @@ Traceback (most recent call last):
   File "/usr/local/lib/python3.10/subprocess.py", line 526, in run
     raise CalledProcessError(retcode, process.args,
 subprocess.CalledProcessError: Command '['python', 'scripts/transformation/staging_to_production.py']' returned non-zero exit status 1.
+Warehouse Load failed (attempt 1)
+Traceback (most recent call last):
+  File "/app/scripts/pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "/usr/local/lib/python3.10/subprocess.py", line 526, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/transformation/load_warehouse.py']' returned non-zero exit status 1.
+Warehouse Load failed (attempt 2)
+Traceback (most recent call last):
+  File "/app/scripts/pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "/usr/local/lib/python3.10/subprocess.py", line 526, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/transformation/load_warehouse.py']' returned non-zero exit status 1.
+Warehouse Load failed (attempt 3)
+Traceback (most recent call last):
+  File "/app/scripts/pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "/usr/local/lib/python3.10/subprocess.py", line 526, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/transformation/load_warehouse.py']' returned non-zero exit status 1.

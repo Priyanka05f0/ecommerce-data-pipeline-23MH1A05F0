@@ -1,0 +1,34 @@
+2026-01-01 18:48:47,580 | INFO | Starting step: Data Generation
+2026-01-01 18:48:52,827 | INFO | Completed step: Data Generation in 5.25s
+2026-01-01 18:48:52,828 | INFO | Starting step: Data Ingestion
+2026-01-01 18:48:57,852 | INFO | Completed step: Data Ingestion in 5.02s
+2026-01-01 18:48:57,852 | INFO | Starting step: Data Quality Checks
+2026-01-01 18:48:58,006 | INFO | Completed step: Data Quality Checks in 0.15s
+2026-01-01 18:48:58,007 | INFO | Starting step: Staging to Production
+2026-01-01 18:48:58,980 | INFO | Completed step: Staging to Production in 0.97s
+2026-01-01 18:48:58,981 | INFO | Starting step: Warehouse Load
+2026-01-01 18:48:59,399 | ERROR | Warehouse Load failed (attempt 1)
+Traceback (most recent call last):
+  File "/app/scripts/pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "/usr/local/lib/python3.10/subprocess.py", line 526, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/transformation/load_warehouse.py']' returned non-zero exit status 1.
+2026-01-01 18:49:00,401 | INFO | Starting step: Warehouse Load
+2026-01-01 18:49:00,994 | ERROR | Warehouse Load failed (attempt 2)
+Traceback (most recent call last):
+  File "/app/scripts/pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "/usr/local/lib/python3.10/subprocess.py", line 526, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/transformation/load_warehouse.py']' returned non-zero exit status 1.
+2026-01-01 18:49:02,998 | INFO | Starting step: Warehouse Load
+2026-01-01 18:49:03,577 | ERROR | Warehouse Load failed (attempt 3)
+Traceback (most recent call last):
+  File "/app/scripts/pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "/usr/local/lib/python3.10/subprocess.py", line 526, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/transformation/load_warehouse.py']' returned non-zero exit status 1.
+2026-01-01 18:49:03,585 | INFO | Pipeline execution finished
+2026-01-01 18:49:03,586 | INFO | Execution report saved to data/processed/pipeline_execution_report.json
