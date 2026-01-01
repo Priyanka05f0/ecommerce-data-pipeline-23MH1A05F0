@@ -21,6 +21,7 @@ Data Warehouse (Star Schema)
 Analytics Tables
 ↓
 BI Dashboards (Power BI / Tableau)
+```
 
 ---
 
