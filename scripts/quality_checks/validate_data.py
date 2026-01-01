@@ -16,6 +16,7 @@ DB_CONFIG = {
     "password": os.getenv("DB_PASSWORD", "password"),
 }
 
+
 REPORT_PATH = Path("data/processed/quality_checks_report.json")
 LOG_PATH = Path("logs/quality_checks.log")
 
