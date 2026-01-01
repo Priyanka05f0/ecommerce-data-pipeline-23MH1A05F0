@@ -1,30 +1,62 @@
 # E-Commerce Data Pipeline – End-to-End ETL Project
 
 ## Project Overview
-This project implements a complete end-to-end ETL (Extract, Transform, Load) data pipeline for an e-commerce platform.  
-The pipeline generates synthetic data, performs ingestion, validation, transformation, warehouse loading, analytics generation, and visualization readiness.
+This project implements a complete **end-to-end ETL (Extract, Transform, Load) data pipeline**
+for an e-commerce analytics platform.
 
-The system is fully containerized using Docker and validated using automated tests.
+The pipeline simulates real-world e-commerce data, processes it through multiple database layers,
+and prepares it for business intelligence and reporting.
+
+The system is:
+- Fully automated
+- Containerized using Docker
+- Validated using automated testing (Pytest)
+- Designed using industry-standard data modeling practices
 
 ---
 
 ## Project Architecture
 
-The pipeline follows a layered architecture to ensure scalability, maintainability, and analytical performance.
+The pipeline follows a **layered architecture** to ensure:
+- Data quality
+- Scalability
+- Maintainability
+- High analytical performance
+
+Each layer has a clear responsibility and data flows sequentially through the system.
 
 ### Data Flow
 ```
-Raw CSV Data
-↓
-Staging Schema
-↓
-Production Schema
-↓
-Data Warehouse (Star Schema)
-↓
-Analytics Tables
-↓
-BI Dashboard (Power BI / Tableau)
+┌────────────────────┐
+│  Data Generation   │
+│  (Python + Faker)  │
+└─────────┬──────────┘
+          ↓
+┌────────────────────┐
+│  Staging Schema    │
+│  (Raw CSV Load)    │
+└─────────┬──────────┘
+          ↓
+┌────────────────────┐
+│ Production Schema  │
+│ (Cleaned, 3NF)     │
+└─────────┬──────────┘
+          ↓
+┌────────────────────┐
+│ Warehouse Schema   │
+│ (Star Schema)      │
+└─────────┬──────────┘
+          ↓
+┌────────────────────┐
+│ Analytics Tables   │
+│ (Aggregates)       │
+└─────────┬──────────┘
+          ↓
+┌────────────────────┐
+│ BI Dashboards      │
+│ Power BI / Tableau │
+└────────────────────┘
+
 ```
 
 ---
@@ -49,22 +81,22 @@ BI Dashboard (Power BI / Tableau)
 ecommerce-data-pipeline/
 │
 ├── data/
-│ ├── raw/
-│ ├── processed/
+│ ├── raw/ # Generated CSV files
+│ ├── processed/ # Reports and analytics outputs
 │
 ├── scripts/
-│ ├── data_generation/
-│ ├── ingestion/
-│ ├── quality_checks/
-│ ├── transformation/
-│ ├── monitoring/
+│ ├── data_generation/ # Synthetic data creation
+│ ├── ingestion/ # Load CSV → staging
+│ ├── quality_checks/ # Data validation rules
+│ ├── transformation/ # Staging → production → warehouse
+│ ├── monitoring/ # Pipeline health monitoring
 │ ├── pipeline_orchestrator.py
 │ ├── scheduler.py
 │
 ├── sql/
-│ ├── ddl/
+│ ├── ddl/ # Database schema definitions
 │
-├── tests/
+├── tests/ # Automated tests (pytest)
 │
 ├── docs/
 │ ├── architecture.md
@@ -95,10 +127,19 @@ git clone <https://github.com/Priyanka05f0/ecommerce-data-pipeline-23MH1A05F0>
 cd ecommerce-data-pipeline
 docker-compose -f docker/docker-compose.yml up --build
 ```
+This will:
+
+Start PostgreSQL
+
+Build the pipeline container
+
+Prepare the environment for execution
+
 ---
 
 # Running the Pipeline
 ## Full Pipeline Execution
+Runs all steps in sequence using the orchestrator.
 ```bash
 docker-compose -f docker/docker-compose.yml run --rm pipeline \
 python scripts/pipeline_orchestrator.py
@@ -112,10 +153,18 @@ python scripts/transformation/staging_to_production.py
 python scripts/transformation/load_warehouse.py
 python scripts/transformation/generate_analytics.py
 ```
+Each step can be run independently for debugging or validation.
 
 ---
 
 # Running Tests
+
+Automated tests validate:
+Data correctness
+Schema integrity
+Referential integrity
+Successful data loading
+
 ```bash
 docker-compose -f docker/docker-compose.yml run --rm pipeline pytest -v
 ```
@@ -125,12 +174,12 @@ docker-compose -f docker/docker-compose.yml run --rm pipeline pytest -v
 
 1. Power BI File: dashboards/powerbi/ecommerce_analytics.pbix
 
-2. Tableau Public URL: (Optional – if published)
-
 ---
 
 # Database Schemas
 ## Staging Schema
+
+Raw data loaded directly from CSV files.
 
 staging.customers
 
@@ -142,30 +191,22 @@ staging.transaction_items
 
 ## Production Schema
 
+Cleaned and validated data using normalized design.
 production.customers
-
 production.products
-
 production.transactions
-
 production.transaction_items
 
 ## Warehouse Schema
 
+Star schema optimized for analytics.
 warehouse.dim_customers
-
 warehouse.dim_products
-
 warehouse.dim_date
-
 warehouse.dim_payment_method
-
 warehouse.fact_sales
-
 warehouse.agg_daily_sales
-
 warehouse.agg_product_performance
-
 warehouse.agg_customer_metrics
 
 ---
@@ -173,31 +214,22 @@ warehouse.agg_customer_metrics
 # Key Insights from Analytics
 
 Identification of top-performing product categories
-
 Monthly revenue trends
-
 Customer segmentation insights
-
 Geographic sales distribution
-
 Payment method preferences
 
 # Challenges & Solutions
 
 Data consistency issues: Solved using validation rules
-
 Schema integrity: Enforced via foreign keys
-
 Performance: Optimized using star schema and aggregations
 
 # Future Enhancements
 
 Real-time streaming with Kafka
-
 Cloud deployment (AWS/GCP/Azure)
-
 Advanced ML-based predictions
-
 Real-time alerting and monitoring
 
 ---
