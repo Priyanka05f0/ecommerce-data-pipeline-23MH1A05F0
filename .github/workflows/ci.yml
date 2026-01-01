@@ -26,39 +26,59 @@ jobs:
           --health-retries=5
 
     steps:
+      # ---------------------------
+      # Checkout repository
+      # ---------------------------
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # ---------------------------
+      # Python setup
+      # ---------------------------
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
           cache: "pip"
 
+      # ---------------------------
+      # Install dependencies
+      # ---------------------------
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
 
-      # ✅ Install PostgreSQL client (psql)
+      # ---------------------------
+      # Install psql client
+      # ---------------------------
       - name: Install PostgreSQL client
         run: |
           sudo apt-get update
           sudo apt-get install -y postgresql-client
 
+      # ---------------------------
+      # Wait for Postgres
+      # ---------------------------
       - name: Wait for PostgreSQL
         run: sleep 10
 
-      # ✅ Create schemas + tables
-      - name: Initialize database
+      # ---------------------------
+      # Create schemas ONLY
+      # (tables created by Python ETL)
+      # ---------------------------
+      - name: Initialize database schemas
         env:
           PGPASSWORD: password
         run: |
-          psql -h localhost -U admin -d ecommerce_db -f sql/ddl/schema.sql
-          psql -h localhost -U admin -d ecommerce_db -f sql/ddl/staging_tables.sql
-          psql -h localhost -U admin -d ecommerce_db -f sql/ddl/production_tables.sql
-          psql -h localhost -U admin -d ecommerce_db -f sql/ddl/warehouse_tables.sql
+          psql -h localhost -U admin -d ecommerce_db <<EOF
+          CREATE SCHEMA IF NOT EXISTS staging;
+          CREATE SCHEMA IF NOT EXISTS production;
+          CREATE SCHEMA IF NOT EXISTS warehouse;
+          EOF
 
-      # ✅ Run full ETL pipeline
+      # ---------------------------
+      # Run ETL pipeline
+      # ---------------------------
       - name: Run full ETL pipeline
         env:
           DB_HOST: localhost
@@ -72,7 +92,9 @@ jobs:
           python scripts/transformation/staging_to_production.py
           python scripts/transformation/load_warehouse.py
 
-      # ✅ Run tests
+      # ---------------------------
+      # Run tests
+      # ---------------------------
       - name: Run tests
         env:
           DB_HOST: localhost
