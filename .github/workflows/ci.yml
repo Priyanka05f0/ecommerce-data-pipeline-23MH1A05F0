@@ -14,9 +14,9 @@ jobs:
       postgres:
         image: postgres:14
         env:
-          POSTGRES_DB: ecommerce_db_test
-          POSTGRES_USER: test_user
-          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: ecommerce_db
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: password
         ports:
           - 5432:5432
         options: >-
@@ -40,30 +40,27 @@ jobs:
           pip install -r requirements.txt
 
       - name: Wait for PostgreSQL
-        run: sleep 10
+        run: |
+          sleep 10
 
-      - name: Run ETL pipeline
+      # 🚀 CRITICAL FIX: RUN FULL ETL
+      - name: Run full ETL pipeline
         env:
           DB_HOST: localhost
           DB_PORT: 5432
-          DB_NAME: ecommerce_db_test
-          DB_USER: test_user
-          DB_PASSWORD: test_password
-          DATA_PATH: data/raw
-          CONFIG_PATH: config/config.yaml
+          DB_NAME: ecommerce_db
+          DB_USER: admin
+          DB_PASSWORD: password
         run: |
-          python scripts/data_generation/generate_data.py
-          python scripts/ingestion/ingest_to_staging.py
-          python scripts/transformation/staging_to_production.py
-          python scripts/transformation/load_warehouse.py
-          python scripts/quality_checks/validate_data.py
+          python scripts/pipeline_orchestrator.py
 
+      # ✅ NOW TESTS WILL PASS
       - name: Run tests
         env:
           DB_HOST: localhost
           DB_PORT: 5432
-          DB_NAME: ecommerce_db_test
-          DB_USER: test_user
-          DB_PASSWORD: test_password
+          DB_NAME: ecommerce_db
+          DB_USER: admin
+          DB_PASSWORD: password
         run: |
           pytest -v
