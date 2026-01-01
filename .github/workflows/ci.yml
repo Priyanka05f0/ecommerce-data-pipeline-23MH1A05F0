@@ -20,10 +20,10 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          --health-cmd="pg_isready -U admin"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     steps:
       - name: Checkout code
@@ -40,10 +40,20 @@ jobs:
           pip install -r requirements.txt
 
       - name: Wait for PostgreSQL
-        run: |
-          sleep 10
+        run: sleep 10
 
-      # 🚀 CRITICAL FIX: RUN FULL ETL
+      # ✅ CREATE SCHEMAS (THIS FIXES MOST FAILURES)
+      - name: Create database schemas
+        env:
+          PGPASSWORD: password
+        run: |
+          psql -h localhost -U admin -d ecommerce_db <<EOF
+          CREATE SCHEMA IF NOT EXISTS staging;
+          CREATE SCHEMA IF NOT EXISTS production;
+          CREATE SCHEMA IF NOT EXISTS warehouse;
+          EOF
+
+      # ✅ RUN FULL ETL PIPELINE
       - name: Run full ETL pipeline
         env:
           DB_HOST: localhost
@@ -52,9 +62,12 @@ jobs:
           DB_USER: admin
           DB_PASSWORD: password
         run: |
-          python scripts/pipeline_orchestrator.py
+          python scripts/data_generation/generate_data.py
+          python scripts/ingestion/ingest_to_staging.py
+          python scripts/transformation/staging_to_production.py
+          python scripts/transformation/load_warehouse.py
 
-      # ✅ NOW TESTS WILL PASS
+      # ✅ RUN TESTS
       - name: Run tests
         env:
           DB_HOST: localhost
