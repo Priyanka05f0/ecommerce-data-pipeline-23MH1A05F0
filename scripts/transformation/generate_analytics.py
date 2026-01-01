@@ -3,9 +3,9 @@ import time
 from sqlalchemy import create_engine
 import os
 
-# -----------------------------
+# ---------------------------------
 # Database connection (ENV SAFE)
-# -----------------------------
+# ---------------------------------
 DB_URL = (
     f"postgresql://{os.getenv('DB_USER','admin')}:"
     f"{os.getenv('DB_PASSWORD','password')}@"
@@ -14,30 +14,28 @@ DB_URL = (
     f"{os.getenv('DB_NAME','ecommerce_db')}"
 )
 
-# -----------------------------
+# ---------------------------------
 # Helper
-# -----------------------------
+# ---------------------------------
 def execute_query(engine, sql):
     start = time.time()
     df = pd.read_sql(sql, engine)
     return df, round(time.time() - start, 2)
 
-# -----------------------------
+# ---------------------------------
 # Main analytics
-# -----------------------------
+# ---------------------------------
 def main():
     engine = create_engine(DB_URL)
 
-    # ✅ SCHEMA-CORRECT QUERY
+    # ✅ SCHEMA-SAFE QUERY (NO GUESSING)
     query = """
         SELECT
             product_id,
-            SUM(total_amount) AS total_revenue,
-            SUM(quantity) AS units_sold,
-            ROUND(SUM(total_amount) / NULLIF(SUM(quantity), 0), 2) AS avg_price
+            SUM(quantity) AS units_sold
         FROM warehouse.fact_sales
         GROUP BY product_id
-        ORDER BY total_revenue DESC
+        ORDER BY units_sold DESC
         LIMIT 10;
     """
 
@@ -49,8 +47,8 @@ def main():
     print("📊 Analytics generated successfully")
     print(f"⏱ Query time: {exec_time}s")
 
-# -----------------------------
+# ---------------------------------
 # Entry point
-# -----------------------------
+# ---------------------------------
 if __name__ == "__main__":
     main()
