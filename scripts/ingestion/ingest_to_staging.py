@@ -24,7 +24,7 @@ def initialize_staging(cur):
 
     cur.execute("""
         CREATE TABLE IF NOT EXISTS staging.customers (
-            customer_id INT,
+            customer_id TEXT,
             first_name TEXT,
             last_name TEXT,
             email TEXT,
@@ -39,7 +39,7 @@ def initialize_staging(cur):
 
     cur.execute("""
         CREATE TABLE IF NOT EXISTS staging.products (
-            product_id INT,
+            product_id TEXT,
             product_name TEXT,
             category TEXT,
             sub_category TEXT,
@@ -47,14 +47,14 @@ def initialize_staging(cur):
             cost NUMERIC,
             brand TEXT,
             stock_quantity INT,
-            supplier_id INT
+            supplier_id TEXT
         );
     """)
 
     cur.execute("""
         CREATE TABLE IF NOT EXISTS staging.transactions (
-            transaction_id INT,
-            customer_id INT,
+            transaction_id TEXT,
+            customer_id TEXT,
             transaction_date DATE,
             transaction_time TIME,
             payment_method TEXT,
@@ -65,9 +65,9 @@ def initialize_staging(cur):
 
     cur.execute("""
         CREATE TABLE IF NOT EXISTS staging.transaction_items (
-            item_id INT,
-            transaction_id INT,
-            product_id INT,
+            item_id TEXT,
+            transaction_id TEXT,
+            product_id TEXT,
             quantity INT,
             unit_price NUMERIC,
             discount_percentage NUMERIC,
@@ -105,8 +105,8 @@ def ingest():
             VALUES ({placeholders})
         """
 
-        for row in df.itertuples(index=False):
-            cur.execute(insert_query, tuple(row))
+        for row in df.itertuples(index=False, name=None):
+            cur.execute(insert_query, row)
 
     conn.commit()
     cur.close()
