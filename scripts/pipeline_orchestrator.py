@@ -20,7 +20,7 @@ MAIN_LOG = LOG_DIR / f"pipeline_orchestrator_{timestamp}.log"
 ERROR_LOG = LOG_DIR / "pipeline_errors.log"
 
 # -----------------------------
-# Logging config
+# Logging configuration
 # -----------------------------
 logging.basicConfig(
     level=logging.INFO,
@@ -37,14 +37,14 @@ error_handler.setLevel(logging.ERROR)
 error_logger.addHandler(error_handler)
 
 # -----------------------------
-# Pipeline steps (MATCH YOUR FILES)
+# ✅ FINAL CORRECT PIPELINE ORDER
 # -----------------------------
 PIPELINE_STEPS = [
     ("Data Generation", ["python", "scripts/data_generation/generate_data.py"]),
     ("Data Ingestion", ["python", "scripts/ingestion/ingest_to_staging.py"]),
-    ("Data Quality Checks", ["python", "scripts/quality_checks/validate_data.py"]),
     ("Staging to Production", ["python", "scripts/transformation/staging_to_production.py"]),
     ("Warehouse Load", ["python", "scripts/transformation/load_warehouse.py"]),
+    ("Data Quality Checks", ["python", "scripts/quality_checks/validate_data.py"]),
     ("Analytics Generation", ["python", "scripts/transformation/generate_analytics.py"]),
 ]
 
