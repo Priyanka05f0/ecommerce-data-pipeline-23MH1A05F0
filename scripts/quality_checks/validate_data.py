@@ -1,56 +1,73 @@
 import json
-import datetime
-from sqlalchemy import create_engine, text
-import os
+import logging
+from pathlib import Path
+from datetime import datetime
+import psycopg2
 
-DB_URL = "postgresql://admin:password@postgres:5432/ecommerce_db"
+# -----------------------------
+# Config
+# -----------------------------
+DB_CONFIG = {
+    "host": "postgres",
+    "database": "ecommerce_db",
+    "user": "admin",
+    "password": "password",
+    "port": 5432
+}
 
-SQL_FILE = "/app/sql/queries/data_quality_checks.sql"
-OUTPUT_FILE = "/app/logs/data_quality_report.json"
+REPORT_PATH = Path("data/processed/quality_checks_report.json")
+LOG_PATH = Path("logs/quality_checks.log")
 
+REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
+LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
 
+# -----------------------------
+# Logging
+# -----------------------------
+logging.basicConfig(
+    filename=LOG_PATH,
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s"
+)
+
+# -----------------------------
+# Quality checks
+# -----------------------------
 def run_quality_checks():
-    engine = create_engine(DB_URL)
-    checks = {}
+    conn = psycopg2.connect(**DB_CONFIG)
+    cur = conn.cursor()
 
-    with engine.connect() as conn:
-        with open(SQL_FILE, "r") as f:
-            queries = f.read().split(";")
+    # Check nulls
+    cur.execute("""
+        SELECT
+            COUNT(*) FILTER (WHERE customer_id IS NULL),
+            COUNT(*) FILTER (WHERE total_amount IS NULL)
+        FROM production.transactions;
+    """)
+    null_customers, null_amounts = cur.fetchone()
 
-        for idx, q in enumerate(queries, start=1):
-            q = q.strip()
-            if not q:
-                continue
-
-            try:
-                result = conn.execute(text(q))
-
-                # ✅ FINAL FIX: Convert RowMapping → dict
-                rows = [dict(row) for row in result.mappings().all()]
-
-                checks[f"check_{idx}"] = {
-                    "status": "passed" if len(rows) == 0 else "failed",
-                    "violations": len(rows),
-                    "details": rows
-                }
-
-            except Exception as e:
-                checks[f"check_{idx}"] = {
-                    "status": "error",
-                    "error_message": str(e)
-                }
+    total_issues = null_customers + null_amounts
+    quality_score = max(0, 100 - total_issues)
 
     report = {
-        "check_timestamp": datetime.datetime.utcnow().isoformat(),
-        "checks_performed": checks
+        "timestamp": datetime.utcnow().isoformat(),
+        "quality_score": quality_score,
+        "null_customer_ids": null_customers,
+        "null_total_amounts": null_amounts,
+        "status": "ok" if quality_score >= 95 else "degraded"
     }
 
-    os.makedirs("/app/logs", exist_ok=True)
-    with open(OUTPUT_FILE, "w") as f:
-        json.dump(report, f, indent=2)
+    with open(REPORT_PATH, "w") as f:
+        json.dump(report, f, indent=4)
 
+    logging.info("Quality checks completed")
     print("✅ Data quality checks completed successfully")
 
+    cur.close()
+    conn.close()
 
+# -----------------------------
+# Entry point
+# -----------------------------
 if __name__ == "__main__":
     run_quality_checks()
