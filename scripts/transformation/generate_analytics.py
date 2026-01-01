@@ -1,58 +1,44 @@
-import time
 import pandas as pd
+import time
 from sqlalchemy import create_engine
 import os
 
-# -----------------------------
-# Database connection
-# -----------------------------
-DB_HOST = os.getenv("DB_HOST", "postgres")
-DB_PORT = os.getenv("DB_PORT", "5432")
-DB_NAME = os.getenv("DB_NAME", "ecommerce_db")
-DB_USER = os.getenv("DB_USER", "admin")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "password")
+DB_URL = (
+    f"postgresql://{os.getenv('DB_USER','admin')}:"
+    f"{os.getenv('DB_PASSWORD','password')}@"
+    f"{os.getenv('DB_HOST','localhost')}:"
+    f"{os.getenv('DB_PORT','5432')}/"
+    f"{os.getenv('DB_NAME','ecommerce_db')}"
+)
 
-DB_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-engine = create_engine(DB_URL)
-
-# -----------------------------
-# Helper function
-# -----------------------------
 def execute_query(engine, sql):
     start = time.time()
     df = pd.read_sql(sql, engine)
-    duration = round(time.time() - start, 2)
-    return df, duration
+    exec_time = round(time.time() - start, 2)
+    return df, exec_time
 
-# -----------------------------
-# Main analytics logic
-# -----------------------------
 def main():
-    print("📊 Generating analytics...")
+    engine = create_engine(DB_URL)
 
-    # ✅ FIXED: product_id instead of product_key
     query = """
-    SELECT
-        p.product_name,
-        p.category,
-        SUM(f.line_total) AS total_revenue,
-        SUM(f.quantity) AS units_sold,
-        AVG(f.unit_price) AS avg_price
-    FROM warehouse.fact_sales f
-    JOIN warehouse.dim_products p
-        ON f.product_id = p.product_id
-    GROUP BY p.product_name, p.category
-    ORDER BY total_revenue DESC
-    LIMIT 10;
+        SELECT
+            f.product_id,
+            SUM(f.quantity * f.unit_price) AS total_revenue,
+            SUM(f.quantity) AS units_sold,
+            AVG(f.unit_price) AS avg_price
+        FROM warehouse.fact_sales f
+        GROUP BY f.product_id
+        ORDER BY total_revenue DESC
+        LIMIT 10;
     """
 
     df, exec_time = execute_query(engine, query)
 
-    output_path = "data/processed/top_products.csv"
-    df.to_csv(output_path, index=False)
+    os.makedirs("data/processed", exist_ok=True)
+    df.to_csv("data/processed/top_products.csv", index=False)
 
-    print(f"✅ Analytics generated successfully in {exec_time}s")
-    print(f"📁 Saved to {output_path}")
+    print("📊 Analytics generated successfully")
+    print(f"⏱ Query time: {exec_time}s")
 
 if __name__ == "__main__":
     main()
