@@ -8,36 +8,38 @@ from pathlib import Path
 # Load config (CI + LOCAL SAFE)
 # -----------------------------
 def load_config():
-    # ✅ CI path (GitHub Actions)
     config_path = Path("config/config.yaml")
 
     if config_path.exists():
         with open(config_path, "r") as f:
-            return yaml.safe_load(f)
+            cfg = yaml.safe_load(f)["database"]
+    else:
+        cfg = {}
 
-    # ✅ Fallback to ENV (CI)
     return {
-        "database": {
-            "host": os.getenv("DB_HOST", "localhost"),
-            "port": int(os.getenv("DB_PORT", 5432)),
-            "dbname": os.getenv("DB_NAME", "ecommerce_db"),
-            "user": os.getenv("DB_USER", "admin"),
-            "password": os.getenv("DB_PASSWORD", "password"),
-        }
+        "host": cfg.get("host", os.getenv("DB_HOST", "localhost")),
+        "port": int(cfg.get("port", os.getenv("DB_PORT", 5432))),
+        "dbname": (
+            cfg.get("dbname")
+            or cfg.get("name")
+            or os.getenv("DB_NAME", "ecommerce_db")
+        ),
+        "user": cfg.get("user", os.getenv("DB_USER", "admin")),
+        "password": cfg.get("password", os.getenv("DB_PASSWORD", "password")),
     }
 
 # -----------------------------
 # Ingestion
 # -----------------------------
 def ingest():
-    config = load_config()["database"]
+    db = load_config()
 
     conn = psycopg2.connect(
-        host=config["host"],
-        port=config["port"],
-        dbname=config["dbname"],
-        user=config["user"],
-        password=config["password"],
+        host=db["host"],
+        port=db["port"],
+        dbname=db["dbname"],
+        user=db["user"],
+        password=db["password"],
     )
 
     cur = conn.cursor()
