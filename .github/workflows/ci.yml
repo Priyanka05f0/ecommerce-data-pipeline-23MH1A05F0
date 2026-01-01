@@ -42,6 +42,26 @@ jobs:
       - name: Wait for PostgreSQL
         run: sleep 10
 
+      # -------------------------------
+      # ENV for ALL pipeline steps
+      # -------------------------------
+      - name: Run ETL pipeline
+        env:
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: ecommerce_db_test
+          DB_USER: test_user
+          DB_PASSWORD: test_password
+        run: |
+          python scripts/data_generation/generate_data.py
+          python scripts/ingestion/ingest_to_staging.py
+          python scripts/transformation/staging_to_production.py
+          python scripts/transformation/load_warehouse.py
+          python scripts/quality_checks/validate_data.py
+
+      # -------------------------------
+      # Run tests
+      # -------------------------------
       - name: Run tests
         env:
           DB_HOST: localhost
