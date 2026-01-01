@@ -129,11 +129,9 @@ docker-compose -f docker/docker-compose.yml up --build
 ```
 This will:
 
-Start PostgreSQL
-
-Build the pipeline container
-
-Prepare the environment for execution
+- Start PostgreSQL
+- Build the pipeline container
+- Prepare the environment for execution
 
 ---
 
@@ -160,10 +158,10 @@ Each step can be run independently for debugging or validation.
 # Running Tests
 
 Automated tests validate:
-Data correctness
-Schema integrity
-Referential integrity
-Successful data loading
+- Data correctness
+- Schema integrity
+- Referential integrity
+- Successful data loading
 
 ```bash
 docker-compose -f docker/docker-compose.yml run --rm pipeline pytest -v
@@ -181,61 +179,58 @@ docker-compose -f docker/docker-compose.yml run --rm pipeline pytest -v
 
 Raw data loaded directly from CSV files.
 
-staging.customers
-
-staging.products
-
-staging.transactions
-
-staging.transaction_items
+- staging.customers
+- staging.products
+- staging.transactions
+- staging.transaction_items
 
 ## Production Schema
 
 Cleaned and validated data using normalized design.
-production.customers
-production.products
-production.transactions
-production.transaction_items
+- production.customers
+- production.products
+- production.transactions
+- production.transaction_items
 
 ## Warehouse Schema
 
-Star schema optimized for analytics.
-warehouse.dim_customers
-warehouse.dim_products
-warehouse.dim_date
-warehouse.dim_payment_method
-warehouse.fact_sales
-warehouse.agg_daily_sales
-warehouse.agg_product_performance
-warehouse.agg_customer_metrics
+- Star schema optimized for analytics.
+- warehouse.dim_customers
+- warehouse.dim_products
+- warehouse.dim_date
+- warehouse.dim_payment_method
+- warehouse.fact_sales
+- warehouse.agg_daily_sales
+- warehouse.agg_product_performance
+- warehouse.agg_customer_metrics
 
 ---
 
 # Key Insights from Analytics
 
-Identification of top-performing product categories
-Monthly revenue trends
-Customer segmentation insights
-Geographic sales distribution
-Payment method preferences
+-Identification of top-performing product categories
+- Monthly revenue trends
+- Customer segmentation insights
+- Geographic sales distribution
+- Payment method preferences
 
 # Challenges & Solutions
 
-Data consistency issues: Solved using validation rules
-Schema integrity: Enforced via foreign keys
-Performance: Optimized using star schema and aggregations
+- Data consistency issues: Solved using validation rules
+- Schema integrity: Enforced via foreign keys
+- Performance: Optimized using star schema and aggregations
 
 # Future Enhancements
 
-Real-time streaming with Kafka
-Cloud deployment (AWS/GCP/Azure)
-Advanced ML-based predictions
-Real-time alerting and monitoring
+- Real-time streaming with Kafka
+- Cloud deployment (AWS/GCP/Azure)
+- Advanced ML-based predictions
+- Real-time alerting and monitoring
 
 ---
 
 # Contact
 
-Name: Lakshmi Priyanka Bethampudi
-Roll Number : 23MH1A05F0
-Email : 23mh1a05f0@acoe.edu.in
+- Name: Lakshmi Priyanka Bethampudi
+- Roll Number : 23MH1A05F0
+- Email : 23mh1a05f0@acoe.edu.in
