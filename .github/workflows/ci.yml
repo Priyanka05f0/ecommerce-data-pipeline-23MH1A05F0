@@ -47,6 +47,18 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
+          # REQUIRED: Install testing/linting tools if not in requirements.txt
+          pip install flake8 pytest-cov
+
+      # ---------------------------
+      # REQUIRED: Job 1 Code Quality
+      # ---------------------------
+      - name: Lint with flake8
+        run: |
+          # Stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
       # ---------------------------
       # Install psql client
@@ -64,7 +76,6 @@ jobs:
 
       # ---------------------------
       # Create schemas ONLY
-      # (tables created by Python ETL)
       # ---------------------------
       - name: Initialize database schemas
         env:
@@ -77,7 +88,7 @@ jobs:
           EOF
 
       # ---------------------------
-      # Run ETL pipeline
+      # Run ETL pipeline (Integration Test)
       # ---------------------------
       - name: Run full ETL pipeline
         env:
@@ -93,9 +104,9 @@ jobs:
           python scripts/transformation/load_warehouse.py
 
       # ---------------------------
-      # Run tests
+      # Run tests (With Coverage)
       # ---------------------------
-      - name: Run tests
+      - name: Run tests with coverage
         env:
           DB_HOST: localhost
           DB_PORT: 5432
@@ -103,4 +114,5 @@ jobs:
           DB_USER: admin
           DB_PASSWORD: password
         run: |
-          pytest -v
+          # REQUIRED: Fail if coverage is under 70%
+          pytest -v --cov=. --cov-report=term --cov-fail-under=70
