@@ -1,72 +1,58 @@
-import pandas as pd
-import json
 import time
+import pandas as pd
 from sqlalchemy import create_engine
-from datetime import datetime
 import os
 
-DB_URL = "postgresql://admin:password@postgres:5432/ecommerce_db"
-SQL_FILE = "/app/sql/queries/analytical_queries.sql"
-OUTPUT_DIR = "/app/data/processed_analytics"
+# -----------------------------
+# Database connection
+# -----------------------------
+DB_HOST = os.getenv("DB_HOST", "postgres")
+DB_PORT = os.getenv("DB_PORT", "5432")
+DB_NAME = os.getenv("DB_NAME", "ecommerce_db")
+DB_USER = os.getenv("DB_USER", "admin")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "password")
 
+DB_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+engine = create_engine(DB_URL)
 
+# -----------------------------
+# Helper function
+# -----------------------------
 def execute_query(engine, sql):
     start = time.time()
+    df = pd.read_sql(sql, engine)
+    duration = round(time.time() - start, 2)
+    return df, duration
 
-    # ✅ FIX: use raw psycopg2 connection
-    raw_conn = engine.raw_connection()
-    try:
-        df = pd.read_sql(sql, raw_conn)
-    finally:
-        raw_conn.close()
-
-    exec_time = round((time.time() - start) * 1000, 2)
-    return df, exec_time
-
-
-def export_to_csv(df, filename):
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-    df.to_csv(os.path.join(OUTPUT_DIR, filename), index=False)
-
-
+# -----------------------------
+# Main analytics logic
+# -----------------------------
 def main():
-    engine = create_engine(DB_URL)
+    print("📊 Generating analytics...")
 
-    summary = {
-        "generation_timestamp": datetime.utcnow().isoformat(),
-        "queries_executed": 0,
-        "query_results": {}
-    }
+    # ✅ FIXED: product_id instead of product_key
+    query = """
+    SELECT
+        p.product_name,
+        p.category,
+        SUM(f.line_total) AS total_revenue,
+        SUM(f.quantity) AS units_sold,
+        AVG(f.unit_price) AS avg_price
+    FROM warehouse.fact_sales f
+    JOIN warehouse.dim_products p
+        ON f.product_id = p.product_id
+    GROUP BY p.product_name, p.category
+    ORDER BY total_revenue DESC
+    LIMIT 10;
+    """
 
-    with open(SQL_FILE, "r") as f:
-        sql_text = f.read()
+    df, exec_time = execute_query(engine, query)
 
-    queries = [q.strip() for q in sql_text.split(";") if q.strip()]
+    output_path = "data/processed/top_products.csv"
+    df.to_csv(output_path, index=False)
 
-    total_start = time.time()
-
-    for i, query in enumerate(queries, start=1):
-        query_name = f"query{i}"
-
-        df, exec_time = execute_query(engine, query)
-        export_to_csv(df, f"{query_name}.csv")
-
-        summary["query_results"][query_name] = {
-            "rows": len(df),
-            "columns": len(df.columns),
-            "execution_time_ms": exec_time
-        }
-
-    summary["queries_executed"] = len(queries)
-    summary["total_execution_time_seconds"] = round(
-        time.time() - total_start, 2
-    )
-
-    with open(os.path.join(OUTPUT_DIR, "analytics_summary.json"), "w") as f:
-        json.dump(summary, f, indent=2)
-
-    print("✅ Step 4.1 completed successfully: Analytics generated")
-
+    print(f"✅ Analytics generated successfully in {exec_time}s")
+    print(f"📁 Saved to {output_path}")
 
 if __name__ == "__main__":
     main()
