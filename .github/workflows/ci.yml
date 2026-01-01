@@ -115,4 +115,4 @@ jobs:
           DB_PASSWORD: password
         run: |
           # REQUIRED: Fail if coverage is under 70%
-          pytest -v --cov=. --cov-report=term --cov-fail-under=70
+          pytest -v --cov=. --cov-report=term --cov-config=.coveragerc --cov-fail-under=70
