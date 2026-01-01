@@ -1,72 +1,116 @@
 from sqlalchemy import create_engine, text
-from datetime import timedelta
 import os
 
 DB_URL = (
-    f"postgresql://{os.getenv('DB_USER','admin')}:"
-    f"{os.getenv('DB_PASSWORD','password')}@"
-    f"{os.getenv('DB_HOST','localhost')}:"
-    f"{os.getenv('DB_PORT','5432')}/"
-    f"{os.getenv('DB_NAME','ecommerce_db')}"
+    f"postgresql://{os.getenv('DB_USER', 'admin')}:"
+    f"{os.getenv('DB_PASSWORD', 'password')}@"
+    f"{os.getenv('DB_HOST', 'localhost')}:"
+    f"{os.getenv('DB_PORT', '5432')}/"
+    f"{os.getenv('DB_NAME', 'ecommerce_db')}"
 )
-
-def load_dim_date(conn):
-    result = conn.execute(text("""
-        SELECT MIN(transaction_date), MAX(transaction_date)
-        FROM production.transactions
-    """)).fetchone()
-
-    start_date, end_date = result
-    if not start_date or not end_date:
-        return
-
-    conn.execute(text("TRUNCATE warehouse.dim_date CASCADE"))
-
-    d = start_date
-    while d <= end_date:
-        conn.execute(text("""
-            INSERT INTO warehouse.dim_date (
-                date_key, full_date, year, quarter, month, day,
-                month_name, day_name, week_of_year, is_weekend
-            )
-            VALUES (
-                :dk, :fd, :y, :q, :m, :d,
-                :mn, :dn, :w, :iw
-            )
-        """), {
-            "dk": int(d.strftime("%Y%m%d")),
-            "fd": d,
-            "y": d.year,
-            "q": (d.month - 1) // 3 + 1,
-            "m": d.month,
-            "d": d.day,
-            "mn": d.strftime("%B"),
-            "dn": d.strftime("%A"),
-            "w": int(d.strftime("%U")),
-            "iw": d.weekday() >= 5
-        })
-        d += timedelta(days=1)
 
 def load_warehouse():
     engine = create_engine(DB_URL)
 
     with engine.begin() as conn:
 
-        conn.execute(text("CREATE SCHEMA IF NOT EXISTS warehouse"))
-        conn.execute(text("TRUNCATE warehouse.fact_sales CASCADE"))
+        # 1️⃣ CREATE SCHEMA
+        conn.execute(text("CREATE SCHEMA IF NOT EXISTS warehouse;"))
 
-        load_dim_date(conn)
+        # 2️⃣ CREATE DIMENSIONS
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS warehouse.dim_customers (
+                customer_id TEXT PRIMARY KEY,
+                city TEXT,
+                state TEXT,
+                country TEXT,
+                age_group TEXT
+            );
+        """))
 
         conn.execute(text("""
-            INSERT INTO warehouse.fact_sales (
-                date_key, transaction_id, quantity,
-                unit_price, line_total
-            )
+            CREATE TABLE IF NOT EXISTS warehouse.dim_products (
+                product_id TEXT PRIMARY KEY,
+                category TEXT,
+                sub_category TEXT,
+                brand TEXT
+            );
+        """))
+
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS warehouse.dim_date (
+                date DATE PRIMARY KEY,
+                year INT,
+                month INT,
+                day INT
+            );
+        """))
+
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS warehouse.dim_payment_method (
+                payment_method TEXT PRIMARY KEY
+            );
+        """))
+
+        # 3️⃣ CREATE FACT TABLE
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS warehouse.fact_sales (
+                transaction_id TEXT,
+                product_id TEXT,
+                customer_id TEXT,
+                date DATE,
+                payment_method TEXT,
+                quantity INT,
+                revenue NUMERIC
+            );
+        """))
+
+        # 4️⃣ SAFE TRUNCATE
+        conn.execute(text("TRUNCATE warehouse.fact_sales CASCADE;"))
+        conn.execute(text("TRUNCATE warehouse.dim_customers CASCADE;"))
+        conn.execute(text("TRUNCATE warehouse.dim_products CASCADE;"))
+        conn.execute(text("TRUNCATE warehouse.dim_date CASCADE;"))
+        conn.execute(text("TRUNCATE warehouse.dim_payment_method CASCADE;"))
+
+        # 5️⃣ LOAD DIMENSIONS
+        conn.execute(text("""
+            INSERT INTO warehouse.dim_customers
+            SELECT DISTINCT customer_id, city, state, country, age_group
+            FROM production.customers;
+        """))
+
+        conn.execute(text("""
+            INSERT INTO warehouse.dim_products
+            SELECT DISTINCT product_id, category, sub_category, brand
+            FROM production.products;
+        """))
+
+        conn.execute(text("""
+            INSERT INTO warehouse.dim_date
+            SELECT DISTINCT
+                transaction_date,
+                EXTRACT(YEAR FROM transaction_date),
+                EXTRACT(MONTH FROM transaction_date),
+                EXTRACT(DAY FROM transaction_date)
+            FROM production.transactions;
+        """))
+
+        conn.execute(text("""
+            INSERT INTO warehouse.dim_payment_method
+            SELECT DISTINCT payment_method
+            FROM production.transactions;
+        """))
+
+        # 6️⃣ LOAD FACT
+        conn.execute(text("""
+            INSERT INTO warehouse.fact_sales
             SELECT
-                TO_CHAR(t.transaction_date,'YYYYMMDD')::INT,
                 ti.transaction_id,
+                ti.product_id,
+                t.customer_id,
+                t.transaction_date,
+                t.payment_method,
                 ti.quantity,
-                ti.unit_price,
                 ti.line_total
             FROM production.transaction_items ti
             JOIN production.transactions t
