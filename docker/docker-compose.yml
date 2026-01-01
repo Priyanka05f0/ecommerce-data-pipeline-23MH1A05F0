@@ -20,7 +20,7 @@ services:
 
   pipeline:
     build:
-      context: ..                     # build from project root
+      context: ..
       dockerfile: docker/Dockerfile
     depends_on:
       postgres:
@@ -31,13 +31,11 @@ services:
       DB_NAME: ecommerce_db
       DB_USER: admin
       DB_PASSWORD: password
+      PYTHONPATH: /app
     volumes:
-      - ../data:/app/data
-      - ../logs:/app/logs
-      - ../scripts:/app/scripts
-      - ../config:/app/config
-      - ../sql:/app/sql               # ✅ REQUIRED for quality checks
-    command: ["python", "--version"]  # default safe command
+      - ..:/app        # ✅ MOUNT ENTIRE PROJECT (CRITICAL FIX)
+    working_dir: /app
+    command: ["python", "--version"]
 
 volumes:
   postgres_data:

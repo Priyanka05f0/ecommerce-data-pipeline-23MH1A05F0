@@ -8,28 +8,21 @@ DB = {
     "port": 5432
 }
 
-def test_database_connection():
-    conn = psycopg2.connect(**DB)
-    assert conn is not None
-    conn.close()
-
-def test_staging_tables_exist():
+def test_warehouse_tables_exist():
     conn = psycopg2.connect(**DB)
     cur = conn.cursor()
     cur.execute("""
         SELECT table_name 
         FROM information_schema.tables 
-        WHERE table_schema = 'staging';
+        WHERE table_schema = 'warehouse';
     """)
     tables = [t[0] for t in cur.fetchall()]
-    assert "customers" in tables
-    assert "products" in tables
+    assert "fact_sales" in tables
     conn.close()
 
-def test_data_loaded_into_staging():
+def test_fact_sales_not_empty():
     conn = psycopg2.connect(**DB)
     cur = conn.cursor()
-    cur.execute("SELECT COUNT(*) FROM staging.customers;")
-    count = cur.fetchone()[0]
-    assert count > 0
+    cur.execute("SELECT COUNT(*) FROM warehouse.fact_sales;")
+    assert cur.fetchone()[0] > 0
     conn.close()
