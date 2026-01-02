@@ -3,8 +3,8 @@
 ## Student Information
 - Name: Lakshmi Priyanka Bethampudi
 - Roll Number: 23MH1A05F0
-- Email: <your-college-email>
-- Submission Date: 02-01-2026
+- Email: 23mh1a05f0@acoe.edu.in
+- Submission Date: 03-01-2026
 
 ## GitHub Repository
 - Repository URL: https://github.com/Priyanka05f0/ecommerce-data-pipeline-23MH1A05F0
@@ -74,4 +74,4 @@
 I hereby declare that this project is my original work and has been completed independently.
 
 **Signature:** Lakshmi Priyanka Bethampudi  
-**Date:** 02-01-2026
+**Date:** 03-01-2026
