@@ -31,6 +31,7 @@ jobs:
       DB_NAME: ecommerce_db
       DB_USER: admin
       DB_PASSWORD: password
+      PYTHONPATH: ${{ github.workspace }}
 
     steps:
       - name: Checkout code
@@ -46,7 +47,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 🔥 THIS IS THE MISSING STEP 🔥
       - name: Run ETL Pipeline
         run: |
           python scripts/pipeline_orchestrator.py
