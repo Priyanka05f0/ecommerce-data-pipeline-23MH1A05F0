@@ -4,6 +4,7 @@ import json
 import logging
 from datetime import datetime
 from pathlib import Path
+import os
 
 # -----------------------------
 # Paths
@@ -37,6 +38,12 @@ error_handler.setLevel(logging.ERROR)
 error_logger.addHandler(error_handler)
 
 # -----------------------------
+# ✅ ENSURE PYTHONPATH FOR DOCKER + PYTEST
+# -----------------------------
+env = os.environ.copy()
+env["PYTHONPATH"] = "/app"
+
+# -----------------------------
 # ✅ FINAL CORRECT PIPELINE ORDER
 # -----------------------------
 PIPELINE_STEPS = [
@@ -58,7 +65,7 @@ def run_step(step_name, command, max_retries=3):
     while attempts < max_retries:
         try:
             logging.info(f"Starting step: {step_name}")
-            subprocess.run(command, check=True)
+            subprocess.run(command, check=True, env=env)
 
             duration = round(time.time() - start_time, 2)
             logging.info(f"Completed step: {step_name} in {duration}s")

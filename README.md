@@ -126,7 +126,7 @@ ecommerce-data-pipeline/
 ```bash
 git clone https://github.com/Priyanka05f0/ecommerce-data-pipeline-23MH1A05F0
 cd ecommerce-data-pipeline-23MH1A05F0
-docker-compose -f docker/docker-compose.yml up --build
+docker compose -f docker/docker-compose.yml up --build -d
 ```
 This will:
 
@@ -143,7 +143,7 @@ Runs all steps in sequence using the orchestrator.
 docker-compose -f docker/docker-compose.yml run --rm pipeline \
 python scripts/pipeline_orchestrator.py
 ```
-# Run Individual Steps
+### Run Individual Steps
 ```bash
 python scripts/data_generation/generate_data.py
 python scripts/ingestion/ingest_to_staging.py
@@ -165,7 +165,7 @@ Automated tests validate:
 - Successful data loading
 
 ```bash
-docker-compose -f docker/docker-compose.yml run --rm pipeline pytest -v
+docker compose -f docker/docker-compose.yml run --rm pipeline pytest -v
 ```
 ---
 

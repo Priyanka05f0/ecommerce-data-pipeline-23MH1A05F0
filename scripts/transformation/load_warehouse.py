@@ -1,47 +1,66 @@
+import psycopg2
 import os
 from sqlalchemy import create_engine, text
 
-# -----------------------------
-# Database config (Docker-safe)
-# -----------------------------
-DB_HOST = os.getenv("DB_HOST", "postgres")
-DB_PORT = os.getenv("DB_PORT", "5432")
-DB_NAME = os.getenv("DB_NAME", "ecommerce_db")
-DB_USER = os.getenv("DB_USER", "admin")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "password")
+DB_CONFIG = {
+    "host": os.getenv("DB_HOST", "postgres"),
+    "port": os.getenv("DB_PORT", "5432"),
+    "dbname": os.getenv("DB_NAME", "ecommerce_db"),
+    "user": os.getenv("DB_USER", "admin"),
+    "password": os.getenv("DB_PASSWORD", "password")
+}
 
-DATABASE_URL = (
-    f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}"
-    f"@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-)
-
-engine = create_engine(DATABASE_URL)
-
-# -----------------------------
-# Warehouse Load
-# -----------------------------
 def load():
-    with engine.begin() as conn:
-        print("🏗️ Creating warehouse schema...")
-        conn.execute(text("CREATE SCHEMA IF NOT EXISTS warehouse;"))
+    conn = psycopg2.connect(**DB_CONFIG)
+    cur = conn.cursor()
+
+    try:
+        print("🔄 Starting Warehouse Load...")
+        cur.execute("CREATE SCHEMA IF NOT EXISTS warehouse;")
 
         # -----------------------------
-        # FACT TABLE
+        # 1. Customer Metrics (Aggregation)
         # -----------------------------
-        print("📦 Creating warehouse.fact_sales...")
+        print("   Creating warehouse.customer_metrics...")
+        cur.execute("DROP TABLE IF EXISTS warehouse.customer_metrics;")
+        cur.execute("""
+            CREATE TABLE warehouse.customer_metrics AS
+            SELECT 
+                customer_email,
+                COUNT(transaction_id) AS total_orders,
+                SUM(line_total) AS total_spent
+            FROM production.transactions
+            GROUP BY customer_email;
+        """)
 
-        conn.execute(text("""
-            DROP TABLE IF EXISTS warehouse.fact_sales;
-
+        # -----------------------------
+        # 2. Fact Sales (Copy relevant columns)
+        # -----------------------------
+        print("   Creating warehouse.fact_sales...")
+        cur.execute("DROP TABLE IF EXISTS warehouse.fact_sales;")
+        # Note: We rename unit_price -> price to match what analytics script expects
+        cur.execute("""
             CREATE TABLE warehouse.fact_sales AS
-            SELECT
+            SELECT 
+                transaction_id,
                 product_id,
                 quantity,
-                unit_price AS price
+                unit_price AS price,
+                line_total,
+                transaction_date
             FROM production.transactions;
-        """))
+        """)
 
+        conn.commit()
         print("✅ Warehouse Load completed successfully")
+
+    except Exception as e:
+        print(f"❌ Error in Warehouse Load: {e}")
+        conn.rollback()
+        raise
+    finally:
+        cur.close()
+        conn.close()
 
 if __name__ == "__main__":
     load()

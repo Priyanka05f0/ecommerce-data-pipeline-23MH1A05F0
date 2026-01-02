@@ -1,31 +1,48 @@
+# tests/test_ingestion.py
+import pytest
 import psycopg2
+import os
 
-DB = {
-    "host": "localhost",
-    "port": 5432,
-    "database": "ecommerce_db",
+# We re-define config here just to check connection independently, 
+# ensuring we use the ENV variable.
+DB_CONFIG = {
+    "host": os.getenv("DB_HOST", "postgres"),
+    "port": "5432",
+    "dbname": "ecommerce_db",
     "user": "admin",
     "password": "password"
 }
 
 def test_database_connection():
-    conn = psycopg2.connect(**DB)
-    conn.close()
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        assert conn is not None
+        conn.close()
+    except psycopg2.OperationalError as e:
+        pytest.fail(f"Database connection failed: {e}")
 
 def test_staging_tables_exist():
-    conn = psycopg2.connect(**DB)
-    cur = conn.cursor()
-    cur.execute("""
-        SELECT table_name FROM information_schema.tables
-        WHERE table_schema='staging'
-    """)
-    tables = [r[0] for r in cur.fetchall()]
-    assert "customers" in tables
-    conn.close()
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        cur = conn.cursor()
+        
+        tables = ["customers", "products", "transactions", "transaction_items"]
+        for table in tables:
+            cur.execute(f"SELECT to_regclass('staging.{table}');")
+            result = cur.fetchone()
+            assert result[0] is not None, f"Table staging.{table} does not exist"
+        
+        cur.close()
+        conn.close()
+    except Exception as e:
+        pytest.fail(f"Test failed: {e}")
 
 def test_data_loaded_into_staging():
-    conn = psycopg2.connect(**DB)
+    conn = psycopg2.connect(**DB_CONFIG)
     cur = conn.cursor()
+    
     cur.execute("SELECT COUNT(*) FROM staging.customers")
     assert cur.fetchone()[0] > 0
+    
+    cur.close()
     conn.close()

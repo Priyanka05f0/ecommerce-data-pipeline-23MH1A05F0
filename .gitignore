@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Coverage
+.coverage
+htmlcov/
+
+# Virtual environments
+venv/
+.env
+
+# Docker
+postgres_data/
+
+# Logs & runtime files
+logs/
+data/raw/
+
+# OS
+.DS_Store
+Thumbs.db
