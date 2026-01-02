@@ -50,6 +50,19 @@
 - CI/CD pipeline passing
 - Final submission prepared
 
+### Verification Screenshots
+
+| No | Description | Screenshot File |
+|----|--------------|-----------------|
+| 1 | GitHub Repository (Main Page) | `screenshots/01_GitHub_Repository_Main_Page.png` |
+| 2 | GitHub README + CI Badge | `screenshots/02_GitHub_Readme_CI_Badge.png` |
+| 3 | CI Pipeline Passed (GitHub Actions) | `screenshots/03_CI_Pipeline_Success.png` |
+| 4 | Docker ETL Pipeline Execution | `screenshots/04_Docker_Pipeline_Execution.png` |
+| 5 | Pytest – All 13 Tests Passed | `screenshots/05_Pytest_All_Tests_Passed.png` |
+| 6 | Database Schemas & Tables | `screenshots/06_Database_Schemas_Tables.png` |
+| 7 | Analytics Output Verification | `screenshots/07_Analytics_Output_Verification.png` |
+
+
 ## Key Deliverables
 - Complete Python ETL pipeline
 - PostgreSQL staging, production, warehouse schemas

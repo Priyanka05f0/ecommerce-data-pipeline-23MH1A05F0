@@ -16,6 +16,21 @@ The system is:
 
 ---
 
+## ✅ Project Verification
+
+### CI Pipeline (GitHub Actions)
+![CI Pipeline](screenshots/03_CI_Pipeline_Success.png)
+
+### Docker ETL Pipeline Execution
+![ETL Pipeline](screenshots/04_Docker_Pipeline_Execution.png)
+
+### Automated Tests (Pytest)
+![Pytest](screenshots/05_Pytest_All_Tests_Passed.png)
+
+### Database Schemas
+![Database](screenshots/06_Database_Schemas_Tables.png)
+
+---
 ## Project Architecture
 
 The pipeline follows a **layered architecture** to ensure:
