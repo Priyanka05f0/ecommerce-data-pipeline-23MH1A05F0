@@ -1,35 +1,20 @@
 {
-    "pipeline_execution_id": "PIPE_20260101_184847",
-    "start_time": "2026-01-01T18:48:47.580423",
+    "pipeline_execution_id": "PIPE_20260102_021652",
+    "start_time": "2026-01-02T02:16:52.138688",
     "status": "failed",
     "steps_executed": {
         "Data Generation": {
             "status": "success",
-            "duration_seconds": 5.25,
+            "duration_seconds": 5.43,
             "retry_attempts": 0
         },
         "Data Ingestion": {
-            "status": "success",
-            "duration_seconds": 5.02,
-            "retry_attempts": 0
-        },
-        "Data Quality Checks": {
-            "status": "success",
-            "duration_seconds": 0.15,
-            "retry_attempts": 0
-        },
-        "Staging to Production": {
-            "status": "success",
-            "duration_seconds": 0.97,
-            "retry_attempts": 0
-        },
-        "Warehouse Load": {
             "status": "failed",
-            "duration_seconds": 4.6,
+            "duration_seconds": 5.22,
             "retry_attempts": 3,
-            "error_message": "Command '['python', 'scripts/transformation/load_warehouse.py']' returned non-zero exit status 1."
+            "error_message": "Command '['python', 'scripts/ingestion/ingest_to_staging.py']' returned non-zero exit status 1."
         }
     },
-    "end_time": "2026-01-01T18:49:03.578607",
-    "total_duration_seconds": 16.0
+    "end_time": "2026-01-02T02:17:02.789831",
+    "total_duration_seconds": 10.65
 }

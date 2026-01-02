@@ -1,121 +1,95 @@
-import psycopg2
-import pandas as pd
 import os
-from pathlib import Path
+import pandas as pd
+from sqlalchemy import create_engine, text
 
 # -----------------------------
-# Database config (CI SAFE)
+# Database config (Docker-safe)
 # -----------------------------
-DB_CONFIG = {
-    "host": os.getenv("DB_HOST", "localhost"),
-    "port": int(os.getenv("DB_PORT", 5432)),
-    "database": os.getenv("DB_NAME", "ecommerce_db"),
-    "user": os.getenv("DB_USER", "admin"),
-    "password": os.getenv("DB_PASSWORD", "password"),
-}
+DB_HOST = os.getenv("DB_HOST", "postgres")
+DB_PORT = os.getenv("DB_PORT", "5432")
+DB_NAME = os.getenv("DB_NAME", "ecommerce_db")
+DB_USER = os.getenv("DB_USER", "admin")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "password")
 
-DATA_DIR = Path("data/raw")
+DATABASE_URL = (
+    f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}"
+    f"@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+)
 
-# -----------------------------
-# Create schemas + tables
-# -----------------------------
-def initialize_staging(cur):
-    cur.execute("CREATE SCHEMA IF NOT EXISTS staging;")
-
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS staging.customers (
-            customer_id TEXT,
-            first_name TEXT,
-            last_name TEXT,
-            email TEXT,
-            phone TEXT,
-            registration_date DATE,
-            city TEXT,
-            state TEXT,
-            country TEXT,
-            age_group TEXT
-        );
-    """)
-
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS staging.products (
-            product_id TEXT,
-            product_name TEXT,
-            category TEXT,
-            sub_category TEXT,
-            price NUMERIC,
-            cost NUMERIC,
-            brand TEXT,
-            stock_quantity INT,
-            supplier_id TEXT
-        );
-    """)
-
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS staging.transactions (
-            transaction_id TEXT,
-            customer_id TEXT,
-            transaction_date DATE,
-            transaction_time TIME,
-            payment_method TEXT,
-            shipping_address TEXT,
-            total_amount NUMERIC
-        );
-    """)
-
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS staging.transaction_items (
-            item_id TEXT,
-            transaction_id TEXT,
-            product_id TEXT,
-            quantity INT,
-            unit_price NUMERIC,
-            discount_percentage NUMERIC,
-            line_total NUMERIC
-        );
-    """)
+engine = create_engine(DATABASE_URL)
 
 # -----------------------------
-# Ingest CSV → Staging
+# Ingestion
 # -----------------------------
 def ingest():
-    conn = psycopg2.connect(**DB_CONFIG)
-    cur = conn.cursor()
+    # ---- Required CSV files ----
+    customers_path = "data/raw/customers.csv"
+    products_path = "data/raw/products.csv"
+    transactions_path = "data/raw/transactions.csv"
+    items_path = "data/raw/transaction_items.csv"
 
-    initialize_staging(cur)
-    conn.commit()
+    required_files = [
+        customers_path,
+        products_path,
+        transactions_path,
+        items_path
+    ]
 
-    tables = {
-        "customers": "customers.csv",
-        "products": "products.csv",
-        "transactions": "transactions.csv",
-        "transaction_items": "transaction_items.csv"
-    }
+    # Validate files exist
+    for path in required_files:
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"❌ Missing required file: {path}")
 
-    for table, file in tables.items():
-        df = pd.read_csv(DATA_DIR / file)
+    print("📥 Reading CSV files...")
+    customers = pd.read_csv(customers_path)
+    products = pd.read_csv(products_path)
+    transactions = pd.read_csv(transactions_path)
+    items = pd.read_csv(items_path)
 
-        cur.execute(f"DELETE FROM staging.{table};")
+    with engine.begin() as conn:
+        print("📂 Creating schemas...")
+        conn.execute(text("CREATE SCHEMA IF NOT EXISTS staging;"))
+        conn.execute(text("CREATE SCHEMA IF NOT EXISTS warehouse;"))
 
-        cols = ",".join(df.columns)
-        placeholders = ",".join(["%s"] * len(df.columns))
+        print("⬆️ Loading data into staging tables...")
 
-        insert_query = f"""
-            INSERT INTO staging.{table} ({cols})
-            VALUES ({placeholders})
-        """
+        # 1️⃣ Customers
+        customers.to_sql(
+            name="customers",
+            con=conn,
+            schema="staging",
+            if_exists="replace",
+            index=False
+        )
 
-        for row in df.itertuples(index=False, name=None):
-            cur.execute(insert_query, row)
+        # 2️⃣ Products
+        products.to_sql(
+            name="products",
+            con=conn,
+            schema="staging",
+            if_exists="replace",
+            index=False
+        )
 
-    conn.commit()
-    cur.close()
-    conn.close()
+        # 3️⃣ Transactions (header-level info)
+        transactions.to_sql(
+            name="transactions",
+            con=conn,
+            schema="staging",
+            if_exists="replace",
+            index=False
+        )
+
+        # 4️⃣ Transaction items (line-level info)
+        items.to_sql(
+            name="transaction_items",
+            con=conn,
+            schema="staging",
+            if_exists="replace",
+            index=False
+        )
 
     print("✅ Data ingestion completed successfully")
 
-# -----------------------------
-# Entry point
-# -----------------------------
 if __name__ == "__main__":
     ingest()

@@ -1,10 +1,10 @@
 {
-    "generated_at": "2026-01-01T18:48:52.756433",
+    "generated_at": "2026-01-02T02:16:57.503718",
     "record_counts": {
         "customers": 1000,
         "products": 500,
         "transactions": 10000,
-        "transaction_items": 30151
+        "transaction_items": 30218
     },
     "validation": {
         "orphan_records": 0,

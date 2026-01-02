@@ -82,3 +82,129 @@ Traceback (most recent call last):
   File "/usr/local/lib/python3.10/subprocess.py", line 526, in run
     raise CalledProcessError(retcode, process.args,
 subprocess.CalledProcessError: Command '['python', 'scripts/transformation/load_warehouse.py']' returned non-zero exit status 1.
+Data Ingestion failed (attempt 1)
+Traceback (most recent call last):
+  File "C:\Users\User\OneDrive\Desktop\ecommerce-data-pipeline-23MH1A05F0\scripts\pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 569, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/ingestion/ingest_to_staging.py']' returned non-zero exit status 1.
+Data Ingestion failed (attempt 2)
+Traceback (most recent call last):
+  File "C:\Users\User\OneDrive\Desktop\ecommerce-data-pipeline-23MH1A05F0\scripts\pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 569, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/ingestion/ingest_to_staging.py']' returned non-zero exit status 1.
+Data Ingestion failed (attempt 3)
+Traceback (most recent call last):
+  File "C:\Users\User\OneDrive\Desktop\ecommerce-data-pipeline-23MH1A05F0\scripts\pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 569, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/ingestion/ingest_to_staging.py']' returned non-zero exit status 1.
+Data Ingestion failed (attempt 1)
+Traceback (most recent call last):
+  File "C:\Users\User\OneDrive\Desktop\ecommerce-data-pipeline-23MH1A05F0\scripts\pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 569, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/ingestion/ingest_to_staging.py']' returned non-zero exit status 1.
+Data Ingestion failed (attempt 2)
+Traceback (most recent call last):
+  File "C:\Users\User\OneDrive\Desktop\ecommerce-data-pipeline-23MH1A05F0\scripts\pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 569, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/ingestion/ingest_to_staging.py']' returned non-zero exit status 1.
+Data Ingestion failed (attempt 3)
+Traceback (most recent call last):
+  File "C:\Users\User\OneDrive\Desktop\ecommerce-data-pipeline-23MH1A05F0\scripts\pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 569, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/ingestion/ingest_to_staging.py']' returned non-zero exit status 1.
+Data Ingestion failed (attempt 1)
+Traceback (most recent call last):
+  File "C:\Users\User\OneDrive\Desktop\ecommerce-data-pipeline-23MH1A05F0\scripts\pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 569, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/ingestion/ingest_to_staging.py']' returned non-zero exit status 1.
+Data Ingestion failed (attempt 2)
+Traceback (most recent call last):
+  File "C:\Users\User\OneDrive\Desktop\ecommerce-data-pipeline-23MH1A05F0\scripts\pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 569, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/ingestion/ingest_to_staging.py']' returned non-zero exit status 1.
+Data Ingestion failed (attempt 3)
+Traceback (most recent call last):
+  File "C:\Users\User\OneDrive\Desktop\ecommerce-data-pipeline-23MH1A05F0\scripts\pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 569, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/ingestion/ingest_to_staging.py']' returned non-zero exit status 1.
+Data Ingestion failed (attempt 1)
+Traceback (most recent call last):
+  File "C:\Users\User\OneDrive\Desktop\ecommerce-data-pipeline-23MH1A05F0\scripts\pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 569, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/ingestion/ingest_to_staging.py']' returned non-zero exit status 1.
+Data Ingestion failed (attempt 2)
+Traceback (most recent call last):
+  File "C:\Users\User\OneDrive\Desktop\ecommerce-data-pipeline-23MH1A05F0\scripts\pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 569, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/ingestion/ingest_to_staging.py']' returned non-zero exit status 1.
+Data Ingestion failed (attempt 3)
+Traceback (most recent call last):
+  File "C:\Users\User\OneDrive\Desktop\ecommerce-data-pipeline-23MH1A05F0\scripts\pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 569, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/ingestion/ingest_to_staging.py']' returned non-zero exit status 1.
+Data Ingestion failed (attempt 1)
+Traceback (most recent call last):
+  File "C:\Users\User\OneDrive\Desktop\ecommerce-data-pipeline-23MH1A05F0\scripts\pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 569, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/ingestion/ingest_to_staging.py']' returned non-zero exit status 1.
+Data Ingestion failed (attempt 2)
+Traceback (most recent call last):
+  File "C:\Users\User\OneDrive\Desktop\ecommerce-data-pipeline-23MH1A05F0\scripts\pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 569, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/ingestion/ingest_to_staging.py']' returned non-zero exit status 1.
+Data Ingestion failed (attempt 3)
+Traceback (most recent call last):
+  File "C:\Users\User\OneDrive\Desktop\ecommerce-data-pipeline-23MH1A05F0\scripts\pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 569, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/ingestion/ingest_to_staging.py']' returned non-zero exit status 1.
+Data Ingestion failed (attempt 1)
+Traceback (most recent call last):
+  File "C:\Users\User\OneDrive\Desktop\ecommerce-data-pipeline-23MH1A05F0\scripts\pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 569, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/ingestion/ingest_to_staging.py']' returned non-zero exit status 1.
+Data Ingestion failed (attempt 2)
+Traceback (most recent call last):
+  File "C:\Users\User\OneDrive\Desktop\ecommerce-data-pipeline-23MH1A05F0\scripts\pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 569, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/ingestion/ingest_to_staging.py']' returned non-zero exit status 1.
+Data Ingestion failed (attempt 3)
+Traceback (most recent call last):
+  File "C:\Users\User\OneDrive\Desktop\ecommerce-data-pipeline-23MH1A05F0\scripts\pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 569, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/ingestion/ingest_to_staging.py']' returned non-zero exit status 1.

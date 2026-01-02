@@ -1,54 +1,53 @@
-import pandas as pd
 import time
+import pandas as pd
 from sqlalchemy import create_engine
 import os
 
-# ---------------------------------
-# Database connection (ENV SAFE)
-# ---------------------------------
-DB_URL = (
-    f"postgresql://{os.getenv('DB_USER','admin')}:"
-    f"{os.getenv('DB_PASSWORD','password')}@"
-    f"{os.getenv('DB_HOST','localhost')}:"
-    f"{os.getenv('DB_PORT','5432')}/"
-    f"{os.getenv('DB_NAME','ecommerce_db')}"
+# -----------------------------
+# Database connection
+# -----------------------------
+DB_HOST = os.getenv("DB_HOST", "postgres")
+DB_PORT = os.getenv("DB_PORT", "5432")
+DB_NAME = os.getenv("DB_NAME", "ecommerce_db")
+DB_USER = os.getenv("DB_USER", "admin")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "password")
+
+engine = create_engine(
+    f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 )
 
-# ---------------------------------
-# Helper
-# ---------------------------------
+# -----------------------------
+# Helper function
+# -----------------------------
 def execute_query(engine, sql):
     start = time.time()
     df = pd.read_sql(sql, engine)
-    return df, round(time.time() - start, 2)
+    duration = round(time.time() - start, 2)
+    return df, duration
 
-# ---------------------------------
-# Main analytics
-# ---------------------------------
+# -----------------------------
+# Analytics
+# -----------------------------
 def main():
-    engine = create_engine(DB_URL)
+    print("📊 Generating analytics...")
 
-    # ✅ SCHEMA-SAFE QUERY (NO GUESSING)
     query = """
         SELECT
-            product_id,
-            SUM(quantity) AS units_sold
-        FROM warehouse.fact_sales
-        GROUP BY product_id
-        ORDER BY units_sold DESC
+            f.product_id,
+            SUM(f.quantity * f.price) AS total_revenue,
+            SUM(f.quantity) AS units_sold,
+            AVG(f.price) AS avg_price
+        FROM warehouse.fact_sales f
+        GROUP BY f.product_id
+        ORDER BY total_revenue DESC
         LIMIT 10;
     """
 
     df, exec_time = execute_query(engine, query)
 
-    os.makedirs("data/processed", exist_ok=True)
-    df.to_csv("data/processed/top_products.csv", index=False)
+    print("✅ Analytics generated successfully")
+    print(df)
+    print(f"⏱ Execution time: {exec_time}s")
 
-    print("📊 Analytics generated successfully")
-    print(f"⏱ Query time: {exec_time}s")
-
-# ---------------------------------
-# Entry point
-# ---------------------------------
 if __name__ == "__main__":
     main()

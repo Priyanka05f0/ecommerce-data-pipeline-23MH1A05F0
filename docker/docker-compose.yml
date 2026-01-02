@@ -21,16 +21,15 @@ services:
       context: ..
       dockerfile: docker/Dockerfile
     container_name: ecommerce-pipeline
-    depends_on:
-      postgres:
-        condition: service_healthy
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_NAME: ecommerce_db 
+      DB_NAME: ecommerce_db
       DB_USER: admin
       DB_PASSWORD: password
-    command: python scripts/pipeline_orchestrator.py
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
   postgres_data:

@@ -1,89 +1,60 @@
-from sqlalchemy import create_engine, text
+import psycopg2
 import os
 
-DB_URL = (
-    f"postgresql://{os.getenv('DB_USER', 'admin')}:"
-    f"{os.getenv('DB_PASSWORD', 'password')}@"
-    f"{os.getenv('DB_HOST', 'localhost')}:"
-    f"{os.getenv('DB_PORT', '5432')}/"
-    f"{os.getenv('DB_NAME', 'ecommerce_db')}"
-)
+DB_CONFIG = {
+    "host": os.getenv("DB_HOST", "postgres"),
+    "port": os.getenv("DB_PORT", "5432"),
+    "dbname": os.getenv("DB_NAME", "ecommerce_db"),
+    "user": os.getenv("DB_USER", "admin"),
+    "password": os.getenv("DB_PASSWORD", "password")
+}
 
-def run_staging_to_production():
-    engine = create_engine(DB_URL)
+def transform():
+    conn = psycopg2.connect(**DB_CONFIG)
+    cur = conn.cursor()
 
-    with engine.begin() as conn:
+    try:
+        cur.execute("CREATE SCHEMA IF NOT EXISTS production;")
 
-        # 1️⃣ SCHEMA
-        conn.execute(text("CREATE SCHEMA IF NOT EXISTS production;"))
+        # Customers
+        cur.execute("""
+            DROP TABLE IF EXISTS production.customers;
+            CREATE TABLE production.customers AS
+            SELECT * FROM staging.customers;
+        """)
 
-        # 2️⃣ TABLES
-        conn.execute(text("""
-            CREATE TABLE IF NOT EXISTS production.customers (
-                customer_id TEXT PRIMARY KEY,
-                first_name TEXT,
-                last_name TEXT,
-                email TEXT,
-                phone TEXT,
-                registration_date DATE,
-                city TEXT,
-                state TEXT,
-                country TEXT,
-                age_group TEXT
-            );
-        """))
+        # Products
+        cur.execute("""
+            DROP TABLE IF EXISTS production.products;
+            CREATE TABLE production.products AS
+            SELECT * FROM staging.products;
+        """)
 
-        conn.execute(text("""
-            CREATE TABLE IF NOT EXISTS production.products (
-                product_id TEXT PRIMARY KEY,
-                product_name TEXT,
-                category TEXT,
-                sub_category TEXT,
-                price NUMERIC,
-                cost NUMERIC,
-                brand TEXT,
-                stock_quantity INT,
-                supplier_id TEXT
-            );
-        """))
+        # Transactions (ONLY REAL COLUMNS)
+        cur.execute("""
+            DROP TABLE IF EXISTS production.transactions;
+            CREATE TABLE production.transactions AS
+            SELECT
+                item_id,
+                transaction_id,
+                product_id,
+                quantity,
+                unit_price,
+                discount_percentage,
+                line_total
+            FROM staging.transaction_items;
+        """)
 
-        conn.execute(text("""
-            CREATE TABLE IF NOT EXISTS production.transactions (
-                transaction_id TEXT PRIMARY KEY,
-                customer_id TEXT,
-                transaction_date DATE,
-                transaction_time TIME,
-                payment_method TEXT,
-                shipping_address TEXT,
-                total_amount NUMERIC
-            );
-        """))
+        conn.commit()
+        print("✅ Staging → Production completed successfully")
 
-        conn.execute(text("""
-            CREATE TABLE IF NOT EXISTS production.transaction_items (
-                item_id TEXT PRIMARY KEY,
-                transaction_id TEXT,
-                product_id TEXT,
-                quantity INT,
-                unit_price NUMERIC,
-                discount_percentage NUMERIC,
-                line_total NUMERIC
-            );
-        """))
-
-        # 3️⃣ TRUNCATE (SAFE NOW)
-        conn.execute(text("TRUNCATE production.transaction_items CASCADE;"))
-        conn.execute(text("TRUNCATE production.transactions CASCADE;"))
-        conn.execute(text("TRUNCATE production.products CASCADE;"))
-        conn.execute(text("TRUNCATE production.customers CASCADE;"))
-
-        # 4️⃣ LOAD DATA
-        conn.execute(text("INSERT INTO production.customers SELECT * FROM staging.customers;"))
-        conn.execute(text("INSERT INTO production.products SELECT * FROM staging.products;"))
-        conn.execute(text("INSERT INTO production.transactions SELECT * FROM staging.transactions;"))
-        conn.execute(text("INSERT INTO production.transaction_items SELECT * FROM staging.transaction_items;"))
-
-    print("✅ Staging → Production completed successfully")
+    except Exception as e:
+        conn.rollback()
+        print(f"❌ Error in Staging → Production: {e}")
+        raise
+    finally:
+        cur.close()
+        conn.close()
 
 if __name__ == "__main__":
-    run_staging_to_production()
+    transform()

@@ -1,0 +1,28 @@
+2026-01-02 01:56:19,837 | INFO | Starting step: Data Generation
+2026-01-02 01:56:25,369 | INFO | Completed step: Data Generation in 5.53s
+2026-01-02 01:56:25,369 | INFO | Starting step: Data Ingestion
+2026-01-02 01:56:25,880 | ERROR | Data Ingestion failed (attempt 1)
+Traceback (most recent call last):
+  File "C:\Users\User\OneDrive\Desktop\ecommerce-data-pipeline-23MH1A05F0\scripts\pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 569, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/ingestion/ingest_to_staging.py']' returned non-zero exit status 1.
+2026-01-02 01:56:26,893 | INFO | Starting step: Data Ingestion
+2026-01-02 01:56:27,390 | ERROR | Data Ingestion failed (attempt 2)
+Traceback (most recent call last):
+  File "C:\Users\User\OneDrive\Desktop\ecommerce-data-pipeline-23MH1A05F0\scripts\pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 569, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/ingestion/ingest_to_staging.py']' returned non-zero exit status 1.
+2026-01-02 01:56:29,391 | INFO | Starting step: Data Ingestion
+2026-01-02 01:56:29,933 | ERROR | Data Ingestion failed (attempt 3)
+Traceback (most recent call last):
+  File "C:\Users\User\OneDrive\Desktop\ecommerce-data-pipeline-23MH1A05F0\scripts\pipeline_orchestrator.py", line 61, in run_step
+    subprocess.run(command, check=True)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 569, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['python', 'scripts/ingestion/ingest_to_staging.py']' returned non-zero exit status 1.
+2026-01-02 01:56:29,936 | INFO | Pipeline execution finished
+2026-01-02 01:56:29,936 | INFO | Execution report saved to data\processed\pipeline_execution_report.json
